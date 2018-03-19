@@ -1,4 +1,4 @@
-# Spanish-Word-Frequency-Analyzer
+# Spanish-Natural-Language-Analyzer
 
 This is a freelance project for a high school Spanish teacher. The end goal is to create a program that analyzes a document, which can be .txt .docx or .pdf, and produce a list of words ordered from most frequent to least frequent. There will be a few caveats to add after this first step is accomplished:
 
