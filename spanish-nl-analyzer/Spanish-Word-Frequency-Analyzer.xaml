@@ -10,13 +10,13 @@
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Open File" Click="file_browse_Click"/>
+                    <MenuItem x:Name="load_menu" Header="_Load File" Click="file_browse_Click"/>
                     <MenuItem x:Name="exit_menu" Header="_Exit" Click="exit_menu_Click" />
                 </MenuItem>
             </Menu>
             <StackPanel></StackPanel>
         </DockPanel>
-        <TextBox x:Name="file_contents" HorizontalAlignment="Left" Height="143" TextWrapping="Wrap" Text="File Path" VerticalAlignment="Top" Width="700" Margin="50,88,0,0"/>
+        <TextBox x:Name="file_contents" HorizontalAlignment="Left" Height="143" TextWrapping="Wrap" Text="File Path" VerticalAlignment="Top" Width="700" Margin="50,88,0,0" TextChanged="file_contents_TextChanged"/>
         <Label x:Name="welcome_header" Content="Welcome!" HorizontalAlignment="Left" Height="29" Margin="357,30,0,0" VerticalAlignment="Top" Width="86" FontSize="16" FontWeight="Bold"/>
         <TextBlock x:Name="results_box" HorizontalAlignment="Left" Height="145" Margin="50,236,0,0" TextWrapping="Wrap" Text="Results:" VerticalAlignment="Top" Width="700"/>
     </Grid>
