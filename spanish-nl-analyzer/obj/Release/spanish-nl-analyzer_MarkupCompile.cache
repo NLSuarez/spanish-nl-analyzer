@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Release\
 spanish_nl_analyzer
 none
 false
-DEBUG;TRACE
+TRACE
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\App.xaml
-1281804511
+11151548125
 
-9-1573790165
+5-2017746502
 131569487696
-Spanish-Word-Frequency-Analyzer.xaml;
+MainWindow.xaml;
 
 True
 
