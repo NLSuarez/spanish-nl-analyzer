@@ -21,7 +21,7 @@ namespace spanish_nl_analyzer
     /// </summary>
     public partial class MainWindow : Window
     {
-        System.Windows.Threading.DispatcherTimer _typingTimer;
+        //System.Windows.Threading.DispatcherTimer _typingTimer;
         public MainWindow()
         {
             InitializeComponent();
@@ -70,35 +70,99 @@ namespace spanish_nl_analyzer
             }
         }
 
+        /*
+         * Function to exit application on clicking the exit option in the menu.
+         */
         private void exit_menu_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
-        private void file_contents_TextChanged(object sender, TextChangedEventArgs e)
+        private void analyze_Click(object sender, RoutedEventArgs e)
         {
-            if (_typingTimer == null)
+            //Disable the buttons and get the text.
+            analyze_button.IsEnabled = false;
+            save_button.IsEnabled = false;
+            file_contents.IsEnabled = false;
+            string inputText = file_contents.Text;
+            /*
+             * Input analysis and parse logic:
+             * Before we can process, we'll need to parse the input.
+             * 
+             * Spanish has more delimiters than English. Some of them are special characters, so we need to pay extra attention to those language specifics. 
+             * We will also need to ensure that empty values are ignored.
+             * 
+             * List of special characters:
+             * space, tab, period, comma, colon, semi-colon, hyphen surrounded by spaces, parentheses, brackets, braces, ellipsis, 
+             * question marks(both right side up and upside down varients), exclamation marks, quotation marks, dashes, angle quotes,
+             * new lines
+             * 
+             * Where relevant, unicode variants have been included.
+             */
+            string[] delimiterTokens = { " ", "\t", ".", ",", ":", ";", " - ", "(", ")", "[", "]", "{", "}", "...", "?", "!", "\u00BF", "\u00A1", "'", "\"", "\u2018", "\u2019", "\u201C","\u201D", "\u2012", "\u2013", "\u2014", "\u2015", "\u2053", "\u00AB", "\u00BB", "<<", ">>", "\u2039", "\u203A", "<", ">", "\n", "\r","\r\n" };
+            string[] words = inputText.Split(delimiterTokens, System.StringSplitOptions.RemoveEmptyEntries);
+            /*
+             * After getting words array, create a dictionary to contain them.
+             * 
+             * The dictionary will have integers as the values and strings as the key.
+             */
+            Dictionary<string, int> frequencyDict = new Dictionary<string, int>();
+            foreach (string word in words)
             {
-                _typingTimer = new System.Windows.Threading.DispatcherTimer();
-                _typingTimer.Interval = TimeSpan.FromMilliseconds(2000);
-                _typingTimer.Tick += new EventHandler(this.handleTypingTimerTimeout);
+                string lowerWord = word.ToLower();
+                if (frequencyDict.ContainsKey(lowerWord)) {
+                    frequencyDict[lowerWord] += 1;
+                } else
+                {
+                    frequencyDict.Add(lowerWord, 1);
+                }
             }
-            _typingTimer.Stop(); //Reset timer
-            _typingTimer.Tag = (sender as TextBox).Text;
-            _typingTimer.Start();
+            // With dictionary in hand, display list in results_box
+            List<KeyValuePair<string, int>> results = frequencyDict.OrderByDescending(kv => kv.Value).ToList();
+            individual_frequency_results_box.ItemsSource = results;
+            // Reenable buttons
+            analyze_button.IsEnabled = true;
+            save_button.IsEnabled = true;
+            file_contents.IsEnabled = true;
         }
 
-        private void handleTypingTimerTimeout(object sender, EventArgs e)
+        private void save_output_Click(object sender, RoutedEventArgs e)
         {
-            var timer = sender as System.Windows.Threading.DispatcherTimer;
-            if (timer == null)
-            {
-                return;
-            }
-
-            string textToAnalyze = timer.Tag.ToString();
-            results_box.Text = textToAnalyze;
-            timer.Stop(); //Stop the timer so we act only once per keystroke
+            //Save function
         }
+        /*
+         * Timer to dispatch a command for analysis.
+         * Originally, this function was meant to make sure that someone was finished typing before it processed. Based on conversations with the client, however,
+         * that approach is no longer feasible based on the size of files he may pass through. To make sure that everything is completely done before analysis begins,
+         * this function has been removed. However, I've preserved it in case I want to do something like this in the future.
+         */
+
+        //        private void file_contents_TextChanged(object sender, TextChangedEventArgs e)
+        //        {
+        //            if (_typingTimer == null)
+        //            {
+        //                _typingTimer = new System.Windows.Threading.DispatcherTimer();
+        //                _typingTimer.Interval = TimeSpan.FromMilliseconds(2000);
+        //                _typingTimer.Tick += new EventHandler(this.handleTypingTimerTimeout);
+        //            }
+        //            _typingTimer.Stop(); //Reset timer
+        //            _typingTimer.Tag = (sender as TextBox).Text;
+        //            _typingTimer.Start();
+        //        }
+
+        //        private void handleTypingTimerTimeout(object sender, EventArgs e)
+        //        {
+        //            var timer = sender as System.Windows.Threading.DispatcherTimer;
+        //            if (timer == null)
+        //            {
+        //                return;
+        //            }
+
+        //            string textToAnalyze = timer.Tag.ToString();
+        //            results_box.Text = textToAnalyze;
+        //            timer.Stop(); //Stop the timer so we act only once per keystroke
+        //        }
     }
 }
+
+

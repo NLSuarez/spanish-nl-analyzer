@@ -10,14 +10,26 @@
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem x:Name="load_menu" Header="_Load File" Click="file_browse_Click"/>
-                    <MenuItem x:Name="exit_menu" Header="_Exit" Click="exit_menu_Click" />
+                    <MenuItem Header="_Load File" Click="file_browse_Click"/>
+                    <MenuItem Header="_Exit" Click="exit_menu_Click" />
+                </MenuItem>
+                <MenuItem Header="_Mass Analysis">
+                    <MenuItem Header="_Analyze Folder" Click="file_browse_Click"/>
                 </MenuItem>
             </Menu>
-            <StackPanel></StackPanel>
+            <StackPanel>
+            </StackPanel>
         </DockPanel>
-        <TextBox x:Name="file_contents" HorizontalAlignment="Left" Height="143" TextWrapping="Wrap" Text="File Path" VerticalAlignment="Top" Width="700" Margin="50,88,0,0" TextChanged="file_contents_TextChanged"/>
-        <Label x:Name="welcome_header" Content="Welcome!" HorizontalAlignment="Left" Height="29" Margin="357,30,0,0" VerticalAlignment="Top" Width="86" FontSize="16" FontWeight="Bold"/>
-        <TextBlock x:Name="results_box" HorizontalAlignment="Left" Height="145" Margin="50,236,0,0" TextWrapping="Wrap" Text="Results:" VerticalAlignment="Top" Width="700"/>
+        <TextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="158" TextWrapping="Wrap" Text="File Path" VerticalAlignment="Top" Width="700" Margin="50,30,0,0" />
+        <Button x:Name="analyze_button" Content="Analyze" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="-250,200,0,0" Click="analyze_Click"/>
+        <Button x:Name="save_button" Content="Save Output" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="250,200,0,0" Click="save_output_Click"/>
+        <ListView x:Name="individual_frequency_results_box"  HorizontalAlignment="Stretch" Margin="50,236,539,39" Width="190">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Word" Width="100" DisplayMemberBinding="{Binding Key}" />
+                    <GridViewColumn Header="Frequency" Width="70" DisplayMemberBinding="{Binding Value}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>
