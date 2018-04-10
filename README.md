@@ -1,9 +1,11 @@
-# Spanish-Natural-Language-Analyzer
+# Spanish Natural Language Analyzer
 
-This is a freelance project for a high school Spanish teacher. The end goal is to create a program that analyzes a document, which can be .txt .docx or .pdf(may not be possible to do reliably), and produce a list of words ordered from most frequent to least frequent. There will be a few caveats to add after this first step is accomplished:
+This is a freelance project for a high school Spanish teacher. The end goal is to create a program that parses a document, which can be .txt, .docx, or .doc(originally .pdf was included but has since been removed), and produce a list of words ordered from most frequent to least frequent. 
+
+Other caveats desired:
 
 1.  Group together like verbs
-    1. Will require a dictionary of verbs to do that(There's at least 501 with multiple conjugations). Keep in mind we will not be able to differentiate between verbs/nouns for similarly spelled words without significantly more work than necessary.
-2. Extract words from tables/charts/graphs if possible rather than just paragraphs for the end count.
+    1. This will require a dictionary of verbs to accomplish(There's at least 501 with multiple conjugations). The program will also not be able to differentiate between verbs/nouns for similarly spelled words without significantly more work.
+2. Extract words from tables/charts/graphs if possible rather than just paragraphs for the end frequency count.
 
-Technology choice is currently a C# WPF app for Windows only. Will create a UWP app as needed.
+C# and WPF is the focus of this project, but I will transition the logic to other platforms as needed.
