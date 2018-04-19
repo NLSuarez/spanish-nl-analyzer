@@ -45,7 +45,7 @@ namespace spanish_nl_analyzer
                 //Determine document extension and process accordingly
                 string filename = dlg.FileName;
                 string ext = System.IO.Path.GetExtension(filename);
-
+                doc_name.Content = filename;
                 if (ext == ".txt")
                 {
                     //If plain text, just go ahead and put it in the box.
@@ -128,7 +128,35 @@ namespace spanish_nl_analyzer
 
         private void save_output_Click(object sender, RoutedEventArgs e)
         {
-            //Save function
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+
+            dlg.Filter = "text files (*.txt)|*.txt|All Files (*.*)|*.*";
+            dlg.DefaultExt = ".txt";
+            dlg.FileName = System.IO.Path.GetFileName((String)doc_name.Content) + " Frequency";
+            dlg.RestoreDirectory = true;
+
+            Nullable<bool> result = dlg.ShowDialog();
+
+            if(result == true)
+            {
+                List<KeyValuePair<string, int>> input = (List<KeyValuePair<string, int>>)individual_frequency_results_box.ItemsSource;
+                using (Stream output = dlg.OpenFile())
+                {
+                    using (StreamWriter wText = new StreamWriter(output))
+                    {
+                        wText.WriteLine("\r\n\"" + dlg.FileName + "\" Word Frequencies \r\n");
+                        String currentFrequency;
+                        wText.WriteLine("By word: \r\n");
+                        foreach (KeyValuePair<string, int> item in input)
+                        {
+                            currentFrequency = item.Key + " : " + item.Value;
+                            wText.WriteLine(currentFrequency);
+                        }
+                        wText.WriteLine("\r\n ###################### \r\n");
+                        wText.Flush();
+                    }    
+                }
+            }
         }
         /*
          * Timer to dispatch a command for analysis.

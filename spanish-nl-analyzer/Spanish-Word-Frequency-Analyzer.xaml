@@ -20,16 +20,17 @@
             <StackPanel>
             </StackPanel>
         </DockPanel>
-        <TextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="158" TextWrapping="Wrap" Text="File Path" VerticalAlignment="Top" Width="700" Margin="50,30,0,0" />
+        <TextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="134" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,54,10,0" />
         <Button x:Name="analyze_button" Content="Analyze" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="-250,200,0,0" Click="analyze_Click"/>
         <Button x:Name="save_button" Content="Save Output" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="250,200,0,0" Click="save_output_Click"/>
-        <ListView x:Name="individual_frequency_results_box"  HorizontalAlignment="Stretch" Margin="50,236,539,39" Width="190">
+        <ListView x:Name="individual_frequency_results_box"  HorizontalAlignment="Left" Margin="10,230,0,44" Width="250">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Word" Width="100" DisplayMemberBinding="{Binding Key}" />
-                    <GridViewColumn Header="Frequency" Width="70" DisplayMemberBinding="{Binding Value}" />
+                    <GridViewColumn Header="Word" Width="120" DisplayMemberBinding="{Binding Key}" />
+                    <GridViewColumn Header="Frequency" Width="120" DisplayMemberBinding="{Binding Value}" />
                 </GridView>
             </ListView.View>
         </ListView>
+        <Label x:Name="doc_name"  Content="None" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,23,0,0" FontWeight="Bold"/>
     </Grid>
 </Window>
