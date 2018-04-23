@@ -14,7 +14,7 @@
                     <MenuItem Header="_Exit" Click="exit_menu_Click" />
                 </MenuItem>
                 <MenuItem Header="_Mass Analysis">
-                    <MenuItem Header="_Analyze Folder" Click="file_browse_Click"/>
+                    <MenuItem Header="_Scan Folder" Click="folder_browse_Click"/>
                 </MenuItem>
             </Menu>
             <StackPanel>
@@ -22,7 +22,7 @@
         </DockPanel>
         <TextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="134" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,54,10,0" />
         <Button x:Name="analyze_button" Content="Analyze" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="-250,200,0,0" Click="analyze_Click"/>
-        <Button x:Name="save_button" Content="Save Output" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="250,200,0,0" Click="save_output_Click"/>
+        <Button x:Name="save_button" Content="Save As Spreadsheet" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="250,200,0,0" Click="save_output_Click"/>
         <ListView x:Name="individual_frequency_results_box"  HorizontalAlignment="Left" Margin="10,230,0,44" Width="250">
             <ListView.View>
                 <GridView>

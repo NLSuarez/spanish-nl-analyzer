@@ -5,7 +5,6 @@ F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\sp
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\Spanish-Word-Frequency-Analyzer.g.cs
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\App.g.cs
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer_MarkupCompile.cache
-F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer_MarkupCompile.lref
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\Spanish-Word-Frequency-Analyzer.baml
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer.g.resources
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish_nl_analyzer.Properties.Resources.resources
@@ -14,3 +13,11 @@ F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\sp
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer.exe
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer.pdb
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\App.baml
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\ICSharpCode.SharpZipLib.dll
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\NPOI.dll
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\NPOI.OOXML.dll
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\NPOI.OpenXml4Net.dll
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\NPOI.OpenXmlFormats.dll
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\NPOI.xml
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer.csproj.CopyComplete
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\NPOI.ScratchPad.HWPF.dll
