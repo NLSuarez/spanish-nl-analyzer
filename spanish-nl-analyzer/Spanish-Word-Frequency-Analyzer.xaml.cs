@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
@@ -120,7 +121,7 @@ namespace spanish_nl_analyzer
          */
         private void processDirectory(string sourcePath, string destinationPath)
         {
-            string[] fileEntries = Directory.GetFiles(sourcePath);
+            string[] fileEntries = System.IO.Directory.GetFiles(sourcePath);
             string extension;
             string newFilePath;
             string fileContents;
@@ -128,7 +129,7 @@ namespace spanish_nl_analyzer
             foreach (string fileName in fileEntries)
             {
                 extension = System.IO.Path.GetExtension(fileName);
-                if (extension == ".txt" || extension == ".doc" || extension == ".doc")
+                if (extension == ".txt" || extension == ".doc" || extension == ".docx")
                 {
                     //Convert to string
                     fileContents = processFile(fileName);
@@ -140,18 +141,18 @@ namespace spanish_nl_analyzer
                 }
             }
 
-            string[] subdirectoryEntries = Directory.GetDirectories(sourcePath);
+            string[] subdirectoryEntries = System.IO.Directory.GetDirectories(sourcePath);
             string newDirectory;
             foreach (string subdirectory in subdirectoryEntries)
             {
                 //For sub directory, get current source and append new directory name.
-                newDirectory = System.IO.Path.Combine(destinationPath, System.IO.Path.GetDirectoryName(subdirectory));
-                if (Directory.Exists(newDirectory))
+                newDirectory = System.IO.Path.Combine(destinationPath, new DirectoryInfo(subdirectory).Name);
+                if (System.IO.Directory.Exists(newDirectory))
                 {
                     processDirectory(subdirectory, newDirectory);
                 } else
                 {
-                    Directory.CreateDirectory(newDirectory);
+                    System.IO.Directory.CreateDirectory(newDirectory);
                     processDirectory(subdirectory, newDirectory);
                 }
             }
@@ -178,20 +179,29 @@ namespace spanish_nl_analyzer
              * 
              * Where relevant, unicode variants have been included.
              */
-            string[] delimiterTokens = { " ", "\t", ".", ",", ":", ";", " - ", "--", "(", ")", "[", "]", "{", "}", "...",
-                "\u2026", "?", "!", "\u00BF", "\u00A1", "'", "\"", "\u2018", "\u2019", "\u201C", "\u201D", "\u2012", "\u2013",
-                "\u2014", "\u2015", "\u2053", "\u00AB", "\u00BB", "<<", ">>", "\u2039", "\u203A", "<", ">", "\n", "\r", "\r\n",
-                "\\","/" };
-            string[] words = input.Split(delimiterTokens, System.StringSplitOptions.RemoveEmptyEntries);
+
+            // Old method
+            //string[] delimiterTokens = { " ", "\t", ".", ",", ":", ";", " - ", "--", "(", ")", "[", "]", "{", "}", "...",
+            //    "\u2026", "?", "!", "\u00BF", "\u00A1", "'", "\"", "\u2018", "\u2019", "\u201C", "\u201D", "\u2012", "\u2013",
+            //    "\u2014", "\u2015", "\u2053", "\u00AB", "\u00BB", "<<", ">>", "\u2039", "\u203A", "<", ">", "\n", "\r", "\r\n",
+            //    "\\","/" };
+            //string[] words = input.Split(delimiterTokens, System.StringSplitOptions.RemoveEmptyEntries);
+
+            //New method
+            Regex rx = new Regex(@"['’]?[\w]+(?:-\w+|'\w+|’\w+)*['’]?"); //Optional apostrophe in the beginning, followed by one or more letters, followed by a sequence
+            //of one or more instances of hyphens preceeding one or more letters or one of the apostrophes followed by letters, and then finally an optional apostrophe 
+            //at the end.
+            MatchCollection matches = rx.Matches(input);
+
             /*
-             * After getting words array, create a dictionary to contain them.
+             * After getting matches, create a dictionary to contain them.
              * 
              * The dictionary will have integers as the values and strings as the key.
              */
             Dictionary<string, int> frequencyDict = new Dictionary<string, int>();
-            foreach (string word in words)
+            foreach (Match match in matches)
             {
-                string lowerWord = word.ToLower();
+                string lowerWord = match.Value.ToLower();
                 if (frequencyDict.ContainsKey(lowerWord))
                 {
                     frequencyDict[lowerWord] += 1;
@@ -270,7 +280,7 @@ namespace spanish_nl_analyzer
             dlg.FileName = (String)doc_name.Content + " Frequency Spreadsheet";
             //Save to my documents by default
             string combinedPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"Spanish Word Frequency Output Files", DateTime.Now.ToString("yyyy-MM-dd"));
-            if (Directory.Exists(combinedPath))
+            if (System.IO.Directory.Exists(combinedPath))
             {
                 //Set
                 dlg.InitialDirectory = System.IO.Path.GetFullPath(combinedPath);
@@ -312,14 +322,16 @@ namespace spanish_nl_analyzer
             using(WinForms.FolderBrowserDialog dlg = new WinForms.FolderBrowserDialog())
             {
                 dlg.Description = "Select The Folder Containing the Files You Want to Analyze";
-                dlg.RootFolder = Environment.SpecialFolder.Desktop;
                 WinForms.DialogResult result = dlg.ShowDialog();
 
                 if (result == WinForms.DialogResult.OK && !string.IsNullOrWhiteSpace(dlg.SelectedPath))
                 {
                     //Create save folder in my documents
-                    string combinedPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Spanish Word Frequency Output Files", DateTime.Now.ToString("yyyy-MM-dd"));
-                    if (Directory.Exists(combinedPath))
+                    string originalFolderName = new DirectoryInfo(dlg.SelectedPath).Name;
+                    string combinedPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Spanish Word Frequency Output Files");
+                    combinedPath = System.IO.Path.Combine(combinedPath, DateTime.Now.ToString("yyyy-MM-dd"));
+                    combinedPath = System.IO.Path.Combine(combinedPath, originalFolderName);
+                    if (System.IO.Directory.Exists(combinedPath))
                     {
                         //Pass path to process directory as second parameter
                         processDirectory(dlg.SelectedPath, combinedPath);
