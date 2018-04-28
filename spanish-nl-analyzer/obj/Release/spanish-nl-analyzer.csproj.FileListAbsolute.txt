@@ -8,6 +8,7 @@ F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Release\
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Release\NPOI.OpenXmlFormats.dll
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Release\NPOI.ScratchPad.HWPF.dll
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Release\NPOI.xml
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Release\spanish-nl-analyzer.csprojResolveAssemblyReference.cache
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Release\Spanish-Word-Frequency-Analyzer.g.cs
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Release\App.g.cs
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Release\spanish-nl-analyzer_MarkupCompile.cache
