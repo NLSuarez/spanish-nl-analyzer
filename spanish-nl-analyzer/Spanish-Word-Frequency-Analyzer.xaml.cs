@@ -16,8 +16,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using NPOI.XWPF.UserModel;
-using NPOI.XWPF.Extractor;
+using Xceed.Words.NET;
+using System.Xml;
+using System.Xml.Linq;
 using NPOI.HWPF.UserModel;
 using NPOI.HWPF.Extractor;
 
@@ -34,6 +35,75 @@ namespace spanish_nl_analyzer
             InitializeComponent();
         }
 
+        /*
+         * xmlToFrequencyText && xmlToFrequencyText
+         * 
+         * A trio of methods specifically for converting xml to frequency friendly text. DocX mindlessly parses lists without
+         * concern for spacing. Therefore, I've created my own variant where I just use that library to get me the
+         * xml and parse it in a way that my frequency reader can comprehend.
+         */
+        private string xmlToFrequencyText(XElement e)
+        {
+            StringBuilder sb = new StringBuilder();
+            xmlToFrequencyTextRecursive(e, ref sb);
+            return sb.ToString();
+        }
+
+        private void xmlToFrequencyTextRecursive(XElement Xml, ref StringBuilder sb)
+        {
+            //Convert current xml selection to a string
+            string tempStr = ToText(Xml);
+            //If it ends with a space, just append. If it doesn't, add the space and append.
+            if (tempStr.EndsWith(" "))
+            {
+                sb.Append(tempStr);
+            } else
+            {
+                sb.Append(tempStr + " ");
+            }
+            
+            //Recursively iterate through the rest of the xml elements.
+            if (Xml.HasElements)
+                foreach (XElement e in Xml.Elements())
+                    xmlToFrequencyTextRecursive(e, ref sb);
+        }
+
+        //Port of Xceed's ToText method.
+        private string ToText(XElement e)
+        {
+            switch (e.Name.LocalName)
+            {
+                case "tab":
+                    return "\t";
+                case "br":
+                    return "\n";
+                case "t":
+                    goto case "delText";
+                case "delText":
+                    {
+                        if (e.Parent != null && e.Parent.Name.LocalName == "r")
+                        {
+                            XElement run = e.Parent;
+                            var rPr = run.Elements().FirstOrDefault(a => a.Name.LocalName == "rPr");
+                            if (rPr != null)
+                            {
+                                var caps = rPr.Elements().FirstOrDefault(a => a.Name.LocalName == "caps");
+
+                                if (caps != null)
+                                    return e.Value.ToUpper();
+                            }
+                        }
+
+                        return e.Value;
+                    }
+                case "tr":
+                    goto case "br";
+                case "tc":
+                    goto case "tab";
+                default:
+                    return "";
+            }
+        }
 
         /*
          * saveFileResults
@@ -42,7 +112,7 @@ namespace spanish_nl_analyzer
          * 
          * Note: Path should be the full path, including the filename. Make sure you plug in the right path for this function when calling it.
          */
-        private void saveFileResults(string filePath, Dictionary<string, int> frequencyDict)
+        private void saveFileResults(string filePath, List<KeyValuePair<string, int>> frequencyDict)
         {
             using (FileStream output = File.Open(filePath,FileMode.Create))
             {
@@ -82,14 +152,9 @@ namespace spanish_nl_analyzer
             }
             else if (ext == ".docx")
             {
-                XWPFDocument document;
-                using (FileStream fs = new FileStream(path, FileMode.Open))
-                {
-                    document = new XWPFDocument(fs);
-                    XWPFWordExtractor wordExtractor = new XWPFWordExtractor(document);
-                    text = wordExtractor.Text;
-                    return text;
-                }
+                DocX doc = DocX.Load(path);
+                text = xmlToFrequencyText(doc.Xml);
+                return text;
             }
             else if (ext == ".doc")
             {
@@ -116,26 +181,24 @@ namespace spanish_nl_analyzer
          * 
          * Everything in the source directory that is relevant to the program will be iterated over recursively, subdirectories included.
          * 
-         * Responsibility for analyzing the actual files is delegated to "processFile" for extracting the string, "individual_frequency_parse" for the
+         * Responsibility for analyzing the actual files is delegated to "processFile" for extracting the string, "descending_individual_frequency_parse" for the
          * individual word frequency dictionary, and "saveFileResults" for save the appropriate csv file.
          */
         private void processDirectory(string sourcePath, string destinationPath)
         {
+
             string[] fileEntries = System.IO.Directory.GetFiles(sourcePath);
             string extension;
             string newFilePath;
-            string fileContents;
-            Dictionary<string, int> individualFrequency;
+            List<KeyValuePair<string, int>> individualFrequency;
             foreach (string fileName in fileEntries)
             {
-                extension = System.IO.Path.GetExtension(fileName);
+                extension = System.IO.Path.GetExtension(fileName).ToLower();
                 if (extension == ".txt" || extension == ".doc" || extension == ".docx")
                 {
-                    //Convert to string
-                    fileContents = processFile(fileName);
-                    //Get individual word frequency dict
-                    individualFrequency = individual_frequency_parse(fileContents);
-                    //With dictionary in hand, call the save function.
+                    //Get individual word frequency dict and sort into list
+                    individualFrequency = descending_individual_frequency_parse(processFile(fileName));
+                    //With list in hand, call the save function.
                     newFilePath = System.IO.Path.Combine(destinationPath, System.IO.Path.GetFileName(fileName) + " Frequency Spreadsheet.csv");
                     saveFileResults(newFilePath, individualFrequency);
                 }
@@ -159,38 +222,32 @@ namespace spanish_nl_analyzer
         }
 
         /*
-         * individual_frequency_parse
+         * descending_individual_frequency_parse
          * 
-         * When given a string, return a frequency dictionary for each word regardless of group.
+         * When given a string, return a frequency list for each word in descending order regardless of group.
          */
-        private Dictionary<string, int> individual_frequency_parse(string input)
+        private List<KeyValuePair<string, int>> descending_individual_frequency_parse(string input)
         {
             /*
              * Input analysis and parse logic:
              * Before we can process, we'll need to parse the input.
              * 
-             * Spanish has more delimiters than English. Some of them are special characters, so we need to pay extra attention to those language specifics. 
-             * We will also need to ensure that empty values are ignored.
-             * 
-             * List of special characters:
-             * space, tab, period, comma, colon, semi-colon, hyphen surrounded by spaces, parentheses, brackets, braces, ellipsis, 
-             * question marks(both right side up and upside down varients), exclamation marks, quotation marks, dashes, angle quotes,
-             * new lines, back slashes, forward slashes.
-             * 
-             * Where relevant, unicode variants have been included.
+             * There are too many specific delimiters to keep track of, and a limited, regular pattern to normal words.
+             * Therefore, we choose regex and just hunt for things we know are words.
              */
 
-            // Old method
-            //string[] delimiterTokens = { " ", "\t", ".", ",", ":", ";", " - ", "--", "(", ")", "[", "]", "{", "}", "...",
-            //    "\u2026", "?", "!", "\u00BF", "\u00A1", "'", "\"", "\u2018", "\u2019", "\u201C", "\u201D", "\u2012", "\u2013",
-            //    "\u2014", "\u2015", "\u2053", "\u00AB", "\u00BB", "<<", ">>", "\u2039", "\u203A", "<", ">", "\n", "\r", "\r\n",
-            //    "\\","/" };
-            //string[] words = input.Split(delimiterTokens, System.StringSplitOptions.RemoveEmptyEntries);
-
-            //New method
-            Regex rx = new Regex(@"['’]?[\w]+(?:-\w+|'\w+|’\w+)*['’]?"); //Optional apostrophe in the beginning, followed by one or more letters, followed by a sequence
+            //Regex rx = new Regex(@"['’]?[\w]+(?:-\w+|'\w+|’\w+)*['’]?"); //Optional apostrophe in the beginning, followed by one or more letters, followed by a sequence
             //of one or more instances of hyphens preceeding one or more letters or one of the apostrophes followed by letters, and then finally an optional apostrophe 
             //at the end.
+            Regex rx = new Regex(@"['’\.]?[\p{L}\p{Nd}]+(?:\.[\p{L}\p{Nd}]+|-[\p{L}\p{Nd}]+|'[\p{L}\p{Nd}]+|’[\p{L}\p{Nd}]+)*['’]?"); 
+            /*
+             * Optional apostrophe, unicode or otherwise, followed by one or more letters and numbers(decimal or int), followed by a sequence of one or
+             * more instances of hyphens preceeding anything in step 2 or one of the apostrophes followed by the same, and then, finally, an optional apostrophe.
+             * 
+             * \p{L} (all unicode and ascii letters)
+             * \p{Nd} (all numbers and decimal digits)
+             * These patterns are .NET specific and not transferrable.
+             */
             MatchCollection matches = rx.Matches(input);
 
             /*
@@ -201,7 +258,9 @@ namespace spanish_nl_analyzer
             Dictionary<string, int> frequencyDict = new Dictionary<string, int>();
             foreach (Match match in matches)
             {
+                //string manipulations
                 string lowerWord = match.Value.ToLower();
+
                 if (frequencyDict.ContainsKey(lowerWord))
                 {
                     frequencyDict[lowerWord] += 1;
@@ -211,7 +270,7 @@ namespace spanish_nl_analyzer
                     frequencyDict.Add(lowerWord, 1);
                 }
             }
-            return frequencyDict;
+            return frequencyDict.OrderByDescending(kv => kv.Value).ThenByDescending(kv => kv.Key).ToList();
         }
 
         /*
@@ -239,7 +298,7 @@ namespace spanish_nl_analyzer
             {
                 //Set window description for currently viewed document.
                 string filename = System.IO.Path.GetFileName(dlg.FileName);
-                doc_name.Content = filename;
+                doc_name.Text = filename;
                 //Retrieve text from file and place in textbox.
                 string text = processFile(dlg.FileName);
                 file_contents.Text = text;
@@ -260,9 +319,8 @@ namespace spanish_nl_analyzer
             analyze_button.IsEnabled = false;
             save_button.IsEnabled = false;
             file_contents.IsEnabled = false;
-            Dictionary<string, int> frequencyDict = individual_frequency_parse(file_contents.Text);
-            // With dictionary in hand, display list in results_box
-            List<KeyValuePair<string, int>> results = frequencyDict.OrderByDescending(kv => kv.Value).ToList();
+            //Take text and parse it for a descending order frequency.
+            List<KeyValuePair<string, int>> results = descending_individual_frequency_parse(file_contents.Text);
             individual_frequency_results_box.ItemsSource = results;
             // Reenable buttons
             analyze_button.IsEnabled = true;
@@ -277,7 +335,7 @@ namespace spanish_nl_analyzer
             dlg.Filter = "spreadsheet files (*.csv)|*.csv";
             dlg.DefaultExt = ".csv";
             dlg.AddExtension = true;
-            dlg.FileName = (String)doc_name.Content + " Frequency Spreadsheet";
+            dlg.FileName = (String)doc_name.Text + " Frequency Spreadsheet";
             //Save to my documents by default
             string combinedPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"Spanish Word Frequency Output Files", DateTime.Now.ToString("yyyy-MM-dd"));
             if (System.IO.Directory.Exists(combinedPath))
@@ -348,12 +406,47 @@ namespace spanish_nl_analyzer
                 }
             }
         }
+
+        private void Window_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            var element = Mouse.DirectlyOver as FrameworkElement;
+            HoverToolTip = GetToolTip(element);
+        }
+
+        #region HoverToolTip Property
+        public object HoverToolTip
+        {
+            get { return (object)GetValue(HoverToolTipProperty); }
+            set { SetValue(HoverToolTipProperty, value); }
+        }
+
+        public static readonly DependencyProperty HoverToolTipProperty =
+            DependencyProperty.Register(nameof(HoverToolTip), typeof(object), typeof(MainWindow),
+                new PropertyMetadata(null));
+        #endregion HoverToolTip Property
+
+        protected static Object GetToolTip(FrameworkElement obj)
+        {
+            if (obj == null)
+            {
+                return null;
+            }
+            else if (obj.ToolTip != null)
+            {
+                return obj.ToolTip;
+            }
+            else
+            {
+                return GetToolTip(VisualTreeHelper.GetParent(obj) as FrameworkElement);
+            }
+        }
+
         /*
-        * Timer to dispatch a command for analysis.
-        * Originally, this function was meant to make sure that someone was finished typing before it processed. Based on conversations with the client, however,
-        * that approach is no longer feasible based on the size of files he may pass through. To make sure that everything is completely done before analysis begins,
-        * this function has been removed. However, I've preserved it in case I want to do something like this in the future.
-        */
+* Timer to dispatch a command for analysis.
+* Originally, this function was meant to make sure that someone was finished typing before it processed. Based on conversations with the client, however,
+* that approach is no longer feasible based on the size of files he may pass through. To make sure that everything is completely done before analysis begins,
+* this function has been removed. However, I've preserved it in case I want to do something like this in the future.
+*/
 
         //        private void file_contents_TextChanged(object sender, TextChangedEventArgs e)
         //        {

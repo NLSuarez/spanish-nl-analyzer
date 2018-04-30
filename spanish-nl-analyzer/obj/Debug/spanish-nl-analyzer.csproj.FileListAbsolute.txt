@@ -22,3 +22,4 @@ F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\sp
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer.csproj.CopyComplete
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer.exe
 F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\obj\Debug\spanish-nl-analyzer.pdb
+F:\Work\Github Repositories\spanish-nl-analyzer\spanish-nl-analyzer\bin\Debug\Xceed.Words.NET.dll

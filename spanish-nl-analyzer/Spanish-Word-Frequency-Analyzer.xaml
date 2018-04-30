@@ -5,24 +5,43 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:spanish_nl_analyzer"
         mc:Ignorable="d"
-        Title="Spanish Word Frequency Analyzer" Height="450" Width="800" Background="#FFFDFCFC">
+        Title="Spanish Word Frequency Analyzer" Height="450" Width="800" Background="#FFFDFCFC"
+        PreviewMouseMove="Window_PreviewMouseMove">
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Load File" Click="file_browse_Click"/>
-                    <MenuItem Header="_Exit" Click="exit_menu_Click" />
-                </MenuItem>
-                <MenuItem Header="_Mass Analysis">
-                    <MenuItem Header="_Scan Folder" Click="folder_browse_Click"/>
+                    <MenuItem Header="_Open File" Click="file_browse_Click" ToolTip="Open a text file and place the contents in the textbox."/>
+                    <MenuItem Header="_Open Folder" Click="folder_browse_Click" ToolTip="Scan a folder and create spreadsheets for every file inside."/>
+                    <MenuItem Header="_Exit" Click="exit_menu_Click" ToolTip="Exit program."/>
                 </MenuItem>
             </Menu>
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBar.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                        </Grid>
+                    </ItemsPanelTemplate>
+                </StatusBar.ItemsPanel>
+                <StatusBarItem>
+                    <TextBlock x:Name="CursorPosition" Text="{Binding HoverToolTip, RelativeSource={RelativeSource AncestorType=Window}}" />
+                </StatusBarItem>
+                <Separator Grid.Column="1"/>
+                <StatusBarItem Grid.Column="2">
+                    <TextBlock x:Name="doc_name" Text="No File Selected" FontWeight="Bold"/>
+                </StatusBarItem>
+            </StatusBar>
             <StackPanel>
             </StackPanel>
         </DockPanel>
-        <TextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="134" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,54,10,0" />
-        <Button x:Name="analyze_button" Content="Analyze" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="-250,200,0,0" Click="analyze_Click"/>
-        <Button x:Name="save_button" Content="Save As Spreadsheet" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="250,200,0,0" Click="save_output_Click"/>
+        <TextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="150" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,35,10,0" />
+        <Button x:Name="analyze_button" Content="Analyze" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="-250,200,0,0" Click="analyze_Click" ToolTip="Analyze the frequency of the text in the box above."/>
+        <Button x:Name="save_button" Content="Save As Spreadsheet" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="250,200,0,0" Click="save_output_Click" ToolTip="Save the current frequency lists to a spreadsheet file."/>
         <ListView x:Name="individual_frequency_results_box"  HorizontalAlignment="Left" Margin="10,230,0,44" Width="250">
             <ListView.View>
                 <GridView>
@@ -31,6 +50,5 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Label x:Name="doc_name"  Content="None" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,23,0,0" FontWeight="Bold"/>
     </Grid>
 </Window>
