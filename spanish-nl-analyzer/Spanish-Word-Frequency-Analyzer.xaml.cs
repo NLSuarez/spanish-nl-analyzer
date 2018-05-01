@@ -241,8 +241,8 @@ namespace spanish_nl_analyzer
             //at the end.
             Regex rx = new Regex(@"['’\.]?[\p{L}\p{Nd}]+(?:\.[\p{L}\p{Nd}]+|-[\p{L}\p{Nd}]+|'[\p{L}\p{Nd}]+|’[\p{L}\p{Nd}]+)*['’]?"); 
             /*
-             * Optional apostrophe, unicode or otherwise, followed by one or more letters and numbers(decimal or int), followed by a sequence of one or
-             * more instances of hyphens preceeding anything in step 2 or one of the apostrophes followed by the same, and then, finally, an optional apostrophe.
+             * Optional apostrophe, unicode or otherwise, or period followed by one or more letters and numbers, followed by a sequence of one or
+             * more instances of a hyphen, period, or apostrophe preceeding anything in step 2, and then, finally, an optional apostrophe.
              * 
              * \p{L} (all unicode and ascii letters)
              * \p{Nd} (all numbers and decimal digits)
@@ -259,7 +259,8 @@ namespace spanish_nl_analyzer
             foreach (Match match in matches)
             {
                 //string manipulations
-                string lowerWord = match.Value.ToLower();
+                string lowerWord = match.Value.ToLower(); //Ignore case
+                lowerWord = lowerWord.Replace('’', '\''); //Replace fancy quotes with regular quotes
 
                 if (frequencyDict.ContainsKey(lowerWord))
                 {
@@ -297,11 +298,11 @@ namespace spanish_nl_analyzer
             if (result == true)
             {
                 //Set window description for currently viewed document.
-                string filename = System.IO.Path.GetFileName(dlg.FileName);
-                doc_name.Text = filename;
+                doc_name.Text = System.IO.Path.GetFileName(dlg.FileName);
                 //Retrieve text from file and place in textbox.
                 string text = processFile(dlg.FileName);
-                file_contents.Text = text;
+                file_contents.Document.Blocks.Clear();
+                file_contents.Document.Blocks.Add(new System.Windows.Documents.Paragraph(new System.Windows.Documents.Run(text)));
             }
         }
 
@@ -320,7 +321,8 @@ namespace spanish_nl_analyzer
             save_button.IsEnabled = false;
             file_contents.IsEnabled = false;
             //Take text and parse it for a descending order frequency.
-            List<KeyValuePair<string, int>> results = descending_individual_frequency_parse(file_contents.Text);
+            string textToAnalyze = new TextRange(file_contents.Document.ContentStart, file_contents.Document.ContentEnd).Text;
+            List<KeyValuePair<string, int>> results = descending_individual_frequency_parse(textToAnalyze);
             individual_frequency_results_box.ItemsSource = results;
             // Reenable buttons
             analyze_button.IsEnabled = true;

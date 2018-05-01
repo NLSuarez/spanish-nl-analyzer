@@ -39,7 +39,7 @@
             <StackPanel>
             </StackPanel>
         </DockPanel>
-        <TextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="150" TextWrapping="Wrap" VerticalAlignment="Top" Margin="10,35,10,0" />
+        <RichTextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="150" VerticalAlignment="Top" Margin="10,35,10,0" />
         <Button x:Name="analyze_button" Content="Analyze" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="-250,200,0,0" Click="analyze_Click" ToolTip="Analyze the frequency of the text in the box above."/>
         <Button x:Name="save_button" Content="Save As Spreadsheet" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="250,200,0,0" Click="save_output_Click" ToolTip="Save the current frequency lists to a spreadsheet file."/>
         <ListView x:Name="individual_frequency_results_box"  HorizontalAlignment="Left" Margin="10,230,0,44" Width="250">
