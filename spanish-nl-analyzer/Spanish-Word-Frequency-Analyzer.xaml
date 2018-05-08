@@ -15,6 +15,9 @@
                     <MenuItem Header="_Open Folder" Click="folder_browse_Click" ToolTip="Scan a folder and create spreadsheets for every file inside."/>
                     <MenuItem Header="_Exit" Click="exit_menu_Click" ToolTip="Exit program."/>
                 </MenuItem>
+                <MenuItem Header="_Options">
+                    <MenuItem Header="_Filters" ToolTip="Set filters to exclude certain words from analysis." Click="Filters_Menu_Click" />
+                </MenuItem>
             </Menu>
             <StatusBar DockPanel.Dock="Bottom">
                 <StatusBar.ItemsPanel>

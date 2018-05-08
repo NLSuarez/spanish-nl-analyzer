@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,6 +34,39 @@ namespace spanish_nl_analyzer
         public MainWindow()
         {
             InitializeComponent();
+            //After the component has been initialized, attempt to restore the application scope properties.
+            restoreFilters();
+        }
+
+        /*
+         * restoreFilters
+         * 
+         * On application load, attempt to restore Filters. If the storage file for them does not exist, create it.
+         * 
+         * This is constructed from MSDN's listed method for restoring properties. That version, however, doesn't work for dictionaries,
+         * so I need my own version to store the key and value.
+         */
+        private void restoreFilters()
+        {
+            IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForDomain();
+            try
+            {
+                using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream("spanish-nl-analyzer-filters.txt", FileMode.Open, storage))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    Dictionary<string, string> Filters = new Dictionary<string, string>();
+                    while (!reader.EndOfStream)
+                    {
+                        string[] keyValue = reader.ReadLine().Split(',');
+                        Filters.Add(keyValue[0], keyValue[1]);
+                    }
+                    Application.Current.Properties["Filters"] = Filters;
+                }
+            } catch (Exception ex)
+            {
+                Dictionary<string, string> Filters = new Dictionary<string, string>();
+                Application.Current.Properties["Filters"] = Filters;
+            }
         }
 
         /*
@@ -441,6 +475,14 @@ namespace spanish_nl_analyzer
             {
                 return GetToolTip(VisualTreeHelper.GetParent(obj) as FrameworkElement);
             }
+        }
+
+        private void Filters_Menu_Click(object sender, RoutedEventArgs e)
+        {
+            FiltersWindow fWindow = new FiltersWindow();
+            fWindow.Show();
+            Dictionary<string, string> Filters = (Dictionary<string, string>)Application.Current.Properties["Filters"];
+            fWindow.filterWordsList.ItemsSource = Filters.ToList();
         }
 
         /*
