@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -25,6 +26,16 @@ namespace spanish_nl_analyzer
         public FiltersWindow()
         {
             InitializeComponent();
+            try
+            {
+                Dictionary<string, string> Filters = (Dictionary<string, string>)Application.Current.Properties["Filters"];
+                filterWordsList.ItemsSource = HelperFunctions.DictionaryToSortedFilterObjectsList(Filters);
+                CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(filterWordsList.ItemsSource);
+                view.SortDescriptions.Add(new SortDescription("Word", ListSortDirection.Ascending));
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         private void persistFilters()
@@ -50,18 +61,62 @@ namespace spanish_nl_analyzer
             Dictionary<string, string> Filters = (Dictionary<string, string>)Application.Current.Properties["Filters"];
             Regex rx = new Regex(@"['’\.]?[\p{L}\p{Nd}]+(?:\.[\p{L}\p{Nd}]+|-[\p{L}\p{Nd}]+|'[\p{L}\p{Nd}]+|’[\p{L}\p{Nd}]+)*['’]?");
             MatchCollection matches = rx.Matches(words);
+            //Create list to catch pre-existing words
+            List<string> rejections = new List<string>(50); //Generous assumption of 50 rejections
             foreach (Match match in matches)
             {
-                Filters.Add(match.Value, match.Value);
+				string word = match.Value.ToLower();//lowercase for case insensitivity
+				if (!Filters.ContainsKey(word))
+                    Filters.Add(word, word); 
+                else
+                    rejections.Add(word);
             }
             Application.Current.Properties["Filters"] = Filters;
-            filterWordsList.ItemsSource = Filters.ToList();
+            filterWordsList.ItemsSource = HelperFunctions.DictionaryToSortedFilterObjectsList(Filters); //Convert dictionary to filter objects for display
             persistFilters();
+            if (rejections.Any())
+            {
+                displayRejections(rejections);
+            }
         }
 
         private void Delete_Word_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void enter_new_word(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                Add_Word_Click(this, new RoutedEventArgs());
+            }
+        }
+
+        private void displayRejections(List<string> rejections)
+        {
+            string message = "The following words are already filtered and were ignored from your entry:\r\n";
+            foreach (string rejection in rejections)
+            {
+                message += rejection + "\r\n";
+            }
+            MessageBox.Show(message, "Duplicate Filters", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        private void Select_All(object sender, RoutedEventArgs e)
+        {
+            foreach (filterListItem item in filterWordsList.Items)
+            {
+                item.IsSelected = true;
+			}
+        }
+
+        private void Unselect_All(object sender, RoutedEventArgs e)
+        {
+            foreach (filterListItem item in filterWordsList.Items)
+            {
+                item.IsSelected = false;
+            }
         }
     }
 }

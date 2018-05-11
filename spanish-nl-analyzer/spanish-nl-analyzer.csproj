@@ -109,6 +109,7 @@
     <Compile Include="FiltersWindow.xaml.cs">
       <DependentUpon>FiltersWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HelperFunctions.cs" />
     <Compile Include="Spanish-Word-Frequency-Analyzer.xaml.cs">
       <DependentUpon>Spanish-Word-Frequency-Analyzer.xaml</DependentUpon>
       <SubType>Code</SubType>

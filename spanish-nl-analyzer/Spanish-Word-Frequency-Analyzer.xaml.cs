@@ -481,8 +481,6 @@ namespace spanish_nl_analyzer
         {
             FiltersWindow fWindow = new FiltersWindow();
             fWindow.Show();
-            Dictionary<string, string> Filters = (Dictionary<string, string>)Application.Current.Properties["Filters"];
-            fWindow.filterWordsList.ItemsSource = Filters.ToList();
         }
 
         /*

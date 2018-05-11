@@ -17,16 +17,28 @@
             <RowDefinition Height="12px" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ListView x:Name="filterWordsList" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" VerticalAlignment="Top">
+        <ListView x:Name="filterWordsList" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Top">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Word" Width="640" DisplayMemberBinding="{Binding Value}"/>
+                    <GridViewColumn Width="25">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <CheckBox Checked="Select_All" Unchecked="Unselect_All"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Path=IsSelected, Mode=TwoWay}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Word" Width="610" DisplayMemberBinding="{Binding Word}"/>
                 </GridView>
             </ListView.View>
         </ListView>
         <Button Grid.Column="2" Grid.Row="0" Content="Delete" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" ToolTip="Delete selected words from filter." Click="Delete_Word_Click" />
         <Button Grid.Column="2" Grid.Row="2" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" ToolTip="Add the entered word to the filters." RenderTransformOrigin="0.52,-2.053" Click="Add_Word_Click"/>
-        <RichTextBox x:Name="newFilterWord" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <RichTextBox x:Name="newFilterWord" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top" AcceptsReturn="False" AcceptsTab="False" KeyDown="enter_new_word" ToolTip="Press Enter to Create a New Filter">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="Type New Word Here"/>
