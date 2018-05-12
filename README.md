@@ -1,11 +1,9 @@
 # Spanish Natural Language Analyzer
 
-This is a freelance project for a high school Spanish teacher. The end goal is to create a program that parses a document, which can be .txt, .docx, or .doc(originally .pdf was included but has since been removed), and produce a list of words ordered from most frequent to least frequent. 
+This is a freelance project for a high school Spanish teacher. It is a word frequency analyzer for .txt, .docx, and .doc that will catch and organize unique words into a list organized by most frequent to least frequent as well as alphabetical order among frequency levels. There are options for analyzing single files, copy pasted text or analyzing folders recursively. There is also a menu to add filters in case you don't want the parser to catch a specific word. 
 
-Other caveats desired:
+Logic wise, the program does not differentiate between Spanish and English. It will capture unicode and ascii words. Therefore, if you want to use this to analyze your own text documents that aren't Spanish, it will still work.
 
-1.  Group together like verbs
-    1. This will require a dictionary of verbs to accomplish(There's at least 501 with multiple conjugations). The program will also not be able to differentiate between verbs/nouns for similarly spelled words without significantly more work.
-2. Extract words from tables/charts/graphs if possible rather than just paragraphs for the end frequency count.
-
-C# and WPF is the focus of this project, but I will transition the logic to other platforms as needed.
+### Credit to other packages that helped make this open source project possible:
+- Xceed's free package (for extracting .DocX xml)
+- NPOI.HPWF (for extracting text from .Doc)
