@@ -1,8 +1,8 @@
 # Spanish Natural Language Analyzer
 
 ### Requirements
-Windows PC
-At least .NET 4.6.1 on machine
+- Windows PC
+- At least .NET 4.6.1 on machine
 
 ### Description
 This is a freelance project for a high school Spanish teacher. It is a word frequency analyzer for .txt, .docx, and .doc that will catch and organize unique words into a list organized by most frequent to least frequent as well as alphabetical order among frequency levels. There are options for analyzing single files, copy pasted text or analyzing folders recursively. There is also a menu to add filters in case you don't want the parser to catch a specific word. 
