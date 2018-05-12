@@ -221,7 +221,7 @@ namespace spanish_nl_analyzer
         private void processDirectory(string sourcePath, string destinationPath)
         {
 
-            string[] fileEntries = System.IO.Directory.GetFiles(sourcePath);
+            string[] fileEntries = Directory.GetFiles(sourcePath);
             string extension;
             string newFilePath;
             List<KeyValuePair<string, int>> individualFrequency;
@@ -238,18 +238,18 @@ namespace spanish_nl_analyzer
                 }
             }
 
-            string[] subdirectoryEntries = System.IO.Directory.GetDirectories(sourcePath);
+            string[] subdirectoryEntries = Directory.GetDirectories(sourcePath);
             string newDirectory;
             foreach (string subdirectory in subdirectoryEntries)
             {
                 //For sub directory, get current source and append new directory name.
                 newDirectory = System.IO.Path.Combine(destinationPath, new DirectoryInfo(subdirectory).Name);
-                if (System.IO.Directory.Exists(newDirectory))
+                if (Directory.Exists(newDirectory))
                 {
                     processDirectory(subdirectory, newDirectory);
                 } else
                 {
-                    System.IO.Directory.CreateDirectory(newDirectory);
+                    Directory.CreateDirectory(newDirectory);
                     processDirectory(subdirectory, newDirectory);
                 }
             }
@@ -290,20 +290,27 @@ namespace spanish_nl_analyzer
              * The dictionary will have integers as the values and strings as the key.
              */
             Dictionary<string, int> frequencyDict = new Dictionary<string, int>();
+			//Also call in filters
+			Dictionary<string, string> Filters = (Dictionary<string, string>)Application.Current.Properties["Filters"];
             foreach (Match match in matches)
             {
                 //string manipulations
                 string lowerWord = match.Value.ToLower(); //Ignore case
                 lowerWord = lowerWord.Replace('’', '\''); //Replace fancy quotes with regular quotes
 
-                if (frequencyDict.ContainsKey(lowerWord))
-                {
-                    frequencyDict[lowerWord] += 1;
-                }
-                else
-                {
-                    frequencyDict.Add(lowerWord, 1);
-                }
+				//Now check if this word is filtered.
+				//If not, proceed.
+				if (!Filters.ContainsKey(lowerWord))
+				{
+					if (frequencyDict.ContainsKey(lowerWord))
+					{
+						frequencyDict[lowerWord] += 1;
+					}
+					else
+					{
+						frequencyDict.Add(lowerWord, 1);
+					}
+				}
             }
             return frequencyDict.OrderByDescending(kv => kv.Value).ThenByDescending(kv => kv.Key).ToList();
         }
@@ -374,14 +381,14 @@ namespace spanish_nl_analyzer
             dlg.FileName = (String)doc_name.Text + " Frequency Spreadsheet";
             //Save to my documents by default
             string combinedPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"Spanish Word Frequency Output Files", DateTime.Now.ToString("yyyy-MM-dd"));
-            if (System.IO.Directory.Exists(combinedPath))
+            if (Directory.Exists(combinedPath))
             {
                 //Set
                 dlg.InitialDirectory = System.IO.Path.GetFullPath(combinedPath);
             } else
             {
                 //Create
-                System.IO.Directory.CreateDirectory(System.IO.Path.GetFullPath(combinedPath));
+                Directory.CreateDirectory(System.IO.Path.GetFullPath(combinedPath));
                 //Set
                 dlg.InitialDirectory = System.IO.Path.GetFullPath(combinedPath);
             }
@@ -425,7 +432,7 @@ namespace spanish_nl_analyzer
                     string combinedPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Spanish Word Frequency Output Files");
                     combinedPath = System.IO.Path.Combine(combinedPath, DateTime.Now.ToString("yyyy-MM-dd"));
                     combinedPath = System.IO.Path.Combine(combinedPath, originalFolderName);
-                    if (System.IO.Directory.Exists(combinedPath))
+                    if (Directory.Exists(combinedPath))
                     {
                         //Pass path to process directory as second parameter
                         processDirectory(dlg.SelectedPath, combinedPath);
@@ -433,7 +440,7 @@ namespace spanish_nl_analyzer
                     else
                     {
                         //Create destination directory
-                        System.IO.Directory.CreateDirectory(System.IO.Path.GetFullPath(combinedPath));
+                        Directory.CreateDirectory(System.IO.Path.GetFullPath(combinedPath));
                         //Pass path to process directory as second parameter
                         processDirectory(dlg.SelectedPath, combinedPath);
                     }
@@ -452,7 +459,7 @@ namespace spanish_nl_analyzer
         #region HoverToolTip Property
         public object HoverToolTip
         {
-            get { return (object)GetValue(HoverToolTipProperty); }
+            get { return GetValue(HoverToolTipProperty); }
             set { SetValue(HoverToolTipProperty, value); }
         }
 

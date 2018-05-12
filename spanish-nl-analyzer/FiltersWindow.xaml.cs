@@ -38,14 +38,12 @@ namespace spanish_nl_analyzer
             }
         }
 
-        private void persistFilters()
+        private void persistFilters(Dictionary<string, string> Filters)
         {
             IsolatedStorageFile storage = IsolatedStorageFile.GetUserStoreForDomain();
             using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream("spanish-nl-analyzer-filters.txt", FileMode.Create, storage))
             using (StreamWriter writer = new StreamWriter(stream))
             {
-                // Persist each application-scope property individually
-                Dictionary<string, string> Filters = (Dictionary<string, string>)Application.Current.Properties["Filters"];
                 foreach (KeyValuePair<string, string> entry in Filters)
                 {
                     writer.WriteLine("{0},{1}", entry.Key, entry.Value);
@@ -73,7 +71,7 @@ namespace spanish_nl_analyzer
             }
             Application.Current.Properties["Filters"] = Filters;
             filterWordsList.ItemsSource = HelperFunctions.DictionaryToSortedFilterObjectsList(Filters); //Convert dictionary to filter objects for display
-            persistFilters();
+            persistFilters(Filters);
             if (rejections.Any())
             {
                 displayRejections(rejections);
@@ -82,7 +80,17 @@ namespace spanish_nl_analyzer
 
         private void Delete_Word_Click(object sender, RoutedEventArgs e)
         {
-
+			//Update the view
+			List<filterListItem> currentItems = (List<filterListItem>)filterWordsList.ItemsSource;
+			currentItems.RemoveAll((filterListItem i) => i.IsSelected); //O(n)
+			filterWordsList.ItemsSource = currentItems;
+			ICollectionView view = CollectionViewSource.GetDefaultView(filterWordsList.ItemsSource);
+			view.Refresh();
+			//Convert to dictionary
+			Dictionary<string, string> newItems = HelperFunctions.FilterObjectsListToDictionary(currentItems);
+			//Update the application properties and persist
+			Application.Current.Properties["Filters"] = newItems;
+			persistFilters(newItems);
         }
 
         private void enter_new_word(object sender, KeyEventArgs e)

@@ -24,7 +24,7 @@
                     <ItemsPanelTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="300" />
+                                <ColumnDefinition Width="350" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
@@ -42,16 +42,28 @@
             <StackPanel>
             </StackPanel>
         </DockPanel>
-        <RichTextBox x:Name="file_contents" HorizontalAlignment="Stretch" Height="150" VerticalAlignment="Top" Margin="10,35,10,0" />
-        <Button x:Name="analyze_button" Content="Analyze" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Margin="-250,200,0,0" Click="analyze_Click" ToolTip="Analyze the frequency of the text in the box above."/>
-        <Button x:Name="save_button" Content="Save As Spreadsheet" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Margin="250,200,0,0" Click="save_output_Click" ToolTip="Save the current frequency lists to a spreadsheet file."/>
-        <ListView x:Name="individual_frequency_results_box"  HorizontalAlignment="Left" Margin="10,230,0,44" Width="250">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="15px"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="30px"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+        <RichTextBox x:Name="file_contents" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,35,10,10" />
+        <Button x:Name="analyze_button" Grid.Column="0" Grid.Row="1" Content="Analyze" HorizontalAlignment="Center" VerticalAlignment="Top" Width="75" Click="analyze_Click" ToolTip="Analyze the frequency of the text in the box above."/>
+        <Button x:Name="save_button" Grid.Column="2" Grid.Row="1" Content="Save As Spreadsheet" HorizontalAlignment="Center" VerticalAlignment="Top" Width="150" Click="save_output_Click" ToolTip="Save the current frequency lists to a spreadsheet file."/>
+        <ListView x:Name="individual_frequency_results_box" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" Margin="10px, 0, 0, 30px">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Word" Width="120" DisplayMemberBinding="{Binding Key}" />
+                    <GridViewColumn Header="Word" Width="200" DisplayMemberBinding="{Binding Key}" />
                     <GridViewColumn Header="Frequency" Width="120" DisplayMemberBinding="{Binding Value}" />
                 </GridView>
             </ListView.View>
         </ListView>
+        </Grid>
     </Grid>
 </Window>
